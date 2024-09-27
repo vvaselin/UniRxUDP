@@ -1,0 +1,40 @@
+using UnityEngine;
+using System.Net.Sockets;
+using System.Text;
+using UnityEngine.UI;
+
+public class ClientExample : MonoBehaviour
+{
+    private string host = "192.168.137.126";
+    private int port = 9000;
+    private UdpClient client;
+
+    private Compass compass;
+
+    public Text message_ = null;
+
+    void Start()
+    {
+        Input.compass.enabled = true;
+        client = new UdpClient();
+        client.Connect(host, port);
+    }
+
+
+    void Update()
+    {
+        //float magne = Mathf.Ceil(Input.compass.trueHeading);
+        float magne = Input.compass.trueHeading;
+
+
+        var message = Encoding.UTF8.GetBytes(magne.ToString());
+        message_.text = magne.ToString();
+
+        client.Send(message, message.Length);
+    }
+
+    private void OnDestroy()
+    {
+        client.Close();
+    }
+}
